@@ -1,8 +1,9 @@
 #!/usr/bin/python3
 """Gather and display an employee's TODO list progress from an API."""
 
-import requests
+import json
 from sys import argv
+from urllib.request import urlopen
 
 
 API_URL = "https://jsonplaceholder.typicode.com"
@@ -12,8 +13,11 @@ def main():
     """Print the completed tasks for the employee identified by argv."""
     employee_id = int(argv[1])
 
-    employee = requests.get(f"{API_URL}/users/{employee_id}").json()
-    tasks = requests.get(f"{API_URL}/todos?userId={employee_id}").json()
+    with urlopen(f"{API_URL}/users/{employee_id}") as response:
+        employee = json.load(response)
+
+    with urlopen(f"{API_URL}/todos?userId={employee_id}") as response:
+        tasks = json.load(response)
 
     completed_tasks = [task for task in tasks if task.get("completed")]
 
